@@ -17,10 +17,15 @@ type ginServer struct {
 }
 
 // New returns a new GinServer instance
-// it take two parameter
-// *dig.Container
-// registerController is a function which help to load api endpoints/route
-func New(c *dig.Container, registerController func(*dig.Container)) GinServer {
+// it take n number of parameter
+// fist is *dig.Container
+// second is registerController func(*dig.Container),which is a function which help to load api endpoints/route
+// then it allow n number of parameters of type gin.HandlerFunc, which are user define middlewares
+func New(
+	c *dig.Container,
+	registerController func(*dig.Container),
+	middlewares ...gin.HandlerFunc,
+) GinServer {
 	// registering gin server instance to dig instance
 	// since this gin server instance is getting used in all the controllers to define routes
 	c.Provide(gin.New)
@@ -37,6 +42,7 @@ func New(c *dig.Container, registerController func(*dig.Container)) GinServer {
 	// server.Use(gin.Logger())
 	// or
 	server.Use(gin.Recovery(), gin.Logger())
+	server.Use(middlewares...)
 
 	// register controllers here because these are the entry point of app
 	registerController(c)
