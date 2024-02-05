@@ -16,11 +16,17 @@ type ginServer struct {
 	ginApp *gin.Engine
 }
 
-// New returns a new GinServer instance
-// it take n number of parameter
-// fist is *dig.Container
-// second is registerController func(*dig.Container),which is a function which help to load api endpoints/route
-// then it allow n number of parameters of type gin.HandlerFunc, which are user define middlewares
+// New creates and returns a new GinServer instance.
+// It requires the following parameters:
+// 1. container (*dig.Container): The dependency injection container for managing dependencies.
+// 2. registerController (func(*dig.Container)): A function responsible for loading API endpoints and routes by configuring the given container.
+// 3. middlewareHandlers ...gin.HandlerFunc: A variable number of parameters of type gin.HandlerFunc, representing user-defined middlewares to be applied in the server's request processing pipeline.
+
+// Example Usage:
+//
+//	container := dig.New()
+//	server := New(container, RegisterController, LoggerMiddleware, AuthMiddleware)
+//	// Use the 'server' instance to further configure and run the Gin server.
 func New(
 	c *dig.Container,
 	registerController func(*dig.Container),
@@ -37,10 +43,6 @@ func New(
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// server.Use(gin.Recovery())
-	// server.Use(gin.Logger())
-	// or
 	server.Use(gin.Recovery(), gin.Logger())
 	server.Use(middlewares...)
 
